@@ -58,16 +58,7 @@
        php artisan migrate
        ```
 
-   - **Sanctum Middleware Configuration**:
-     - Added the Sanctum middleware for API routes in `app/Http/Kernel.php`:
-       ```php
-       'api' => [
-           \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-           'throttle:api',
-           \Illuminate\Routing\Middleware\SubstituteBindings::class,
-       ],
-       ```
-
+   
    - **Routes for Authentication**: Defined the routes in `routes/api.php` for:
      - **Register**: `POST /register`
      - **Login**: `POST /login`
