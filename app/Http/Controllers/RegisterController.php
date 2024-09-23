@@ -15,25 +15,24 @@ class RegisterController extends Controller
     }
 
     public function register(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
 
-        // Create the user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+    // Create a new user and assign the default role as 'renter' or customize
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'renter',  // Default role is renter, or you can make this dynamic
+    ]);
 
-        // Log the user in
-        Auth::login($user);
+    Auth::login($user);
 
-        // Redirect to dashboard
-        return redirect()->intended('owner/dashboard')->with('status', 'Registration successful!');
-    }
+    return redirect()->intended('renter/dashboard')->with('status', 'Registration successful!');
+}
+
 }

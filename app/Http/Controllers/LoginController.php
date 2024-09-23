@@ -13,20 +13,26 @@ class LoginController extends Controller
     }
 
     public function login(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        // Attempt to log the user in
-        if (Auth::attempt($request->only('email', 'password'))) {
-            // Redirect to dashboard if login is successful
-            return redirect()->intended('owner/dashboard')->with('status', 'Login successful!');
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+
+        // Redirect based on the user's role
+        if (Auth::user()->role === 'owner') {
+            return redirect()->intended('owner/dashboard');
+        } elseif (Auth::user()->role === 'renter') {
+            return redirect()->intended('renter/dashboard');
         }
-
-        // Redirect back with error if login fails
-        return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
     }
+
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ]);
+}
+
 }

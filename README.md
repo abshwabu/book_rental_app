@@ -146,3 +146,220 @@ By the end of **Day 1**, the foundation for the **book rental application** has 
 - **Blade** templates are in place, and the basic home page and layout have been implemented.
 
 The project is now well-prepared for further development, including building out user dashboards, book management, and more.
+
+### **Day 2: Detailed Progress Report**
+
+---
+
+**Project Name**: Book Rental Application  
+**Frameworks/Tools**: Laravel, Blade, MySQL, Laravel Sanctum  
+**Date**: Day 2 of 10  
+
+---
+
+### **Objectives for Day 2**:
+1. Break down the UI into reusable components.
+2. Create the **Book Owner's Dashboard**:
+   - Display books uploaded by the owner.
+   - Include a form for uploading new books.
+   - Implement field validations and enum handling (for status and category).
+3. Create the **Renter's Dashboard**:
+   - Display available books for rent.
+4. Ensure that the dashboards are connected to the proper routes and middleware.
+
+---
+
+### **Tasks Completed**:
+
+#### **1. UI Modular Design with Blade Components**
+   - **Navbar Component**: Created a reusable `navbar` Blade component that is displayed across all pages. The component dynamically displays navigation links for authenticated users, including links to the home page, owner dashboard, and login/logout routes.
+   
+     ```php
+     <nav>
+         <ul>
+             <li><a href="{{ route('home') }}">Home</a></li>
+             @auth
+                 <li><a href="{{ route('owner.dashboard') }}">Owner Dashboard</a></li>
+                 <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                     @csrf
+                     <button type="submit">Logout</button>
+                 </form>
+             @else
+                 <li><a href="{{ route('login') }}">Login</a></li>
+                 <li><a href="{{ route('register') }}">Register</a></li>
+             @endauth
+         </ul>
+     </nav>
+     ```
+
+   - **Footer Component**: Added a simple footer with basic layout to make it reusable across different views.
+
+#### **2. Book Owner's Dashboard**
+   - **Route Setup**: Defined a route to display the book owner's dashboard and added middleware to protect the route using Sanctum's authentication.
+     ```php
+     Route::middleware('auth:sanctum')->group(function () {
+         Route::get('/owner/dashboard', [OwnerController::class, 'index'])->name('owner.dashboard');
+         Route::get('/owner/books/create', [OwnerController::class, 'create'])->name('owner.books.create');
+         Route::post('/owner/books', [OwnerController::class, 'store'])->name('owner.books.store');
+     });
+     ```
+
+   - **OwnerController**: 
+     - Implemented the `index()` method to display the list of books uploaded by the owner.
+     - Implemented the `create()` and `store()` methods to handle book creation with validation.
+     - Handled various book fields like `title`, `author`, `category`, `quantity`, `rental_price`, and `status`.
+
+     ```php
+     public function index()
+     {
+         if (Auth::user()->role !== 'owner') {
+             return redirect()->route('home')->withErrors('Access denied.');
+         }
+
+         $books = Auth::user()->books;
+         return view('owner.dashboard', compact('books'));
+     }
+
+     public function create()
+     {
+         return view('owner.books.create');
+     }
+
+     public function store(Request $request)
+     {
+         $request->validate([
+             'title' => 'required|string|max:255',
+             'author' => 'required|string|max:255',
+             'category' => 'required|string',
+             'quantity' => 'required|integer|min:1',
+             'rental_price' => 'required|numeric',
+             'status' => 'required|in:available,unavailable',
+         ]);
+
+         $book = new Book([
+             'title' => $request->title,
+             'author' => $request->author,
+             'category' => $request->category,
+             'quantity' => $request->quantity,
+             'rental_price' => $request->rental_price,
+             'status' => $request->status,
+         ]);
+
+         Auth::user()->books()->save($book);
+
+         return redirect()->route('owner.dashboard')->with('status', 'Book added successfully!');
+     }
+     ```
+
+   - **Book Creation Form**: Created a form for owners to upload new books, including fields for `title`, `author`, `category`, `quantity`, `rental_price`, and `status` (enum values).
+     - Added a dropdown for `category` and `status` fields to handle enum selections in the form.
+
+     ```html
+     <form action="{{ route('owner.books.store') }}" method="POST">
+         @csrf
+         <div class="form-group">
+             <label for="title">Book Title:</label>
+             <input type="text" name="title" id="title" required>
+         </div>
+         <div class="form-group">
+             <label for="author">Author:</label>
+             <input type="text" name="author" id="author" required>
+         </div>
+         <div class="form-group">
+             <label for="category">Category:</label>
+             <select name="category" id="category">
+                 <option value="Fiction">Fiction</option>
+                 <option value="Science">Science</option>
+             </select>
+         </div>
+         <div class="form-group">
+             <label for="quantity">Quantity:</label>
+             <input type="number" name="quantity" id="quantity" min="1" required>
+         </div>
+         <div class="form-group">
+             <label for="rental_price">Rental Price:</label>
+             <input type="number" name="rental_price" id="rental_price" required>
+         </div>
+         <div class="form-group">
+             <label for="status">Status:</label>
+             <select name="status" id="status">
+                 <option value="available">Available</option>
+                 <option value="unavailable">Unavailable</option>
+             </select>
+         </div>
+         <button type="submit">Add Book</button>
+     </form>
+     ```
+
+   - **Validations**: Implemented server-side validation for all the fields, ensuring that only valid data is stored in the database.
+
+#### **3. Renter's Dashboard**
+   - **Route Setup**: Added a route for the renter’s dashboard to list all available books for rent.
+
+     ```php
+     Route::middleware('auth:sanctum')->group(function () {
+         Route::get('/renter/dashboard', [RenterController::class, 'index'])->name('renter.dashboard');
+     });
+     ```
+
+   - **RenterController**: Implemented the `index()` method to display a list of available books for rent. Only books with a `status` of `available` are shown.
+
+     ```php
+     public function index()
+     {
+         $books = Book::where('status', 'available')->get();
+         return view('renter.dashboard', compact('books'));
+     }
+     ```
+
+   - **Renter Dashboard View**: Created a Blade template to display the available books for rent, including their title, author, category, rental price, and quantity.
+
+     ```html
+     @extends('layouts.layout')
+
+     @section('content')
+     <div class="container">
+         <h2>Available Books for Rent</h2>
+         @if($books->isEmpty())
+             <p>No books available for rent at the moment.</p>
+         @else
+             <ul>
+                 @foreach ($books as $book)
+                     <li>
+                         <strong>{{ $book->title }}</strong> by {{ $book->author }}<br>
+                         Category: {{ $book->category }}<br>
+                         Price: {{ $book->rental_price }} Birr<br>
+                         Quantity: {{ $book->quantity }}<br>
+                     </li>
+                     <hr>
+                 @endforeach
+             </ul>
+         @endif
+     </div>
+     @endsection
+     ```
+
+#### **4. Enum Handling and Default Values**
+   - Added `enum` handling for **status** and **category** fields.
+   - Made the `quantity` field a required field with validation to ensure it is always populated.
+
+---
+
+### **Challenges Faced**:
+- Initial issues with missing default values for the `quantity` and `category` fields were resolved by adding validation rules and ensuring these fields are handled in the form.
+- Error with the `category` field was fixed by adding dropdown options in the book creation form and validation in the controller.
+
+---
+
+### **Next Steps**:
+1. Add basic CSS or Bootstrap to enhance the UI/UX for both the **owner’s** and **renter’s** dashboards.
+2. Add features for **renting** books from the **renter’s dashboard** (optional).
+
+---
+
+### **Conclusion**:
+Day 2 is complete! We successfully built:
+- **UI Modular Design** with reusable Blade components.
+- **Owner’s Dashboard** for managing books, including a form to add books.
+- **Renter’s Dashboard** to browse available books for rent.
+- Handled **enum fields** (status and category) in both forms and views.

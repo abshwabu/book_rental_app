@@ -8,19 +8,15 @@ use Illuminate\Support\Facades\Auth;
 class OwnerController extends Controller
 {
     public function index()
-    {
-        // Check if the user is authenticated
-        if (Auth::check()) {
-            // Fetch all books uploaded by the authenticated user
-            $books = Auth::user()->books;  // Ensure the books relationship is defined in the User model
-        } else {
-            // Redirect to login if the user is not authenticated
-            return redirect()->route('login')->withErrors('You need to be logged in to access the dashboard.');
-        }
-
-        // Return the dashboard view with the list of books
-        return view('owner.dashboard', compact('books'));
+{
+    if (Auth::user()->role !== 'owner') {
+        return redirect()->route('home')->withErrors('Access denied.');
     }
+
+    // Fetch books uploaded by the owner
+    $books = Auth::user()->books;
+    return view('owner.dashboard', compact('books'));
+}
     public function create()
     {
         return view('owner.books.create'); // Ensure this view exists
