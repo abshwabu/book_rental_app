@@ -11,7 +11,7 @@
 <body>
     <header>
         <h1>Book Rental Application</h1>
-        <!-- Add navigation here if needed -->
+        <x-navbar />
     </header>
 
     <main>
