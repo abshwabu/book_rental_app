@@ -153,7 +153,7 @@ The project is now well-prepared for further development, including building out
 
 **Project Name**: Book Rental Application  
 **Frameworks/Tools**: Laravel, Blade, MySQL, Laravel Sanctum  
-**Date**: Day 2 of 10  
+**Date**: 23/09/2024
 
 ---
 
@@ -363,3 +363,185 @@ Day 2 is complete! We successfully built:
 - **Owner’s Dashboard** for managing books, including a form to add books.
 - **Renter’s Dashboard** to browse available books for rent.
 - Handled **enum fields** (status and category) in both forms and views.
+
+### **Day 3: Detailed Progress Report**
+
+---
+
+**Project Name**: Book Rental Application  
+**Frameworks/Tools**: Laravel 11, Blade, MySQL, Laravel Sanctum  
+**Date**: 24/09/2024
+
+---
+
+### **Objectives for Day 3**:
+1. **Implement Book Management Features for Owners**:
+   - Edit Book Feature: Allow owners to edit details of their uploaded books.
+   - Delete Book Feature: Provide functionality to delete books from the system.
+   - Search and Filter Books: Implement a search feature for owners to find their books easily.
+2. **Admin Feature Implementation**:
+   - Set up an admin role.
+   - Create an admin dashboard for managing users and books.
+   - Allow the admin to view, activate, deactivate, or delete users.
+   - Allow the admin to manage all books in the system.
+
+---
+
+### **Tasks Completed**:
+
+#### **1. Edit Book Feature**
+- **Route Definition**: Created routes for editing a book and handling the update.
+
+    ```php
+    Route::get('/owner/books/{book}/edit', [OwnerController::class, 'edit'])->name('owner.books.edit');
+    Route::put('/owner/books/{book}', [OwnerController::class, 'update'])->name('owner.books.update');
+    ```
+
+- **Controller Implementation**: 
+    - Implemented `edit()` to show the edit form for the selected book.
+    - Implemented `update()` to handle the form submission, validate inputs, and update the book record.
+
+    ```php
+    public function edit(Book $book)
+    {
+        // Check ownership and return the edit view
+        return view('owner.books.edit', compact('book'));
+    }
+
+    public function update(Request $request, Book $book)
+    {
+        // Validate input and update the book
+    }
+    ```
+
+- **Edit Book Blade View**: Created a Blade view that pre-fills the book's current data in a form, allowing the owner to update details.
+
+    ```html
+    <form action="{{ route('owner.books.update', $book->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+        <!-- Form fields for editing book -->
+    </form>
+    ```
+
+---
+
+#### **2. Delete Book Feature**
+- **Route Definition**: Added a route for deleting books.
+
+    ```php
+    Route::delete('/owner/books/{book}', [OwnerController::class, 'destroy'])->name('owner.books.destroy');
+    ```
+
+- **Controller Implementation**: 
+    - Implemented `destroy()` to delete the book after confirming the ownership and confirming deletion.
+
+    ```php
+    public function destroy(Book $book)
+    {
+        // Check ownership and delete the book
+    }
+    ```
+
+- **Delete Button in Dashboard**: Added a delete button for each book in the owner’s dashboard, with a confirmation prompt.
+
+    ```html
+    <form action="{{ route('owner.books.destroy', $book->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+        @csrf
+        @method('DELETE')
+        <button type="submit">Delete</button>
+    </form>
+    ```
+
+---
+
+#### **3. Search and Filter Books**
+- **Search Bar Implementation**: Added a search form to the owner's dashboard to allow searching books by title or category.
+
+    ```html
+    <form action="{{ route('owner.dashboard') }}" method="GET">
+        <input type="text" name="search" placeholder="Search by title or category" value="{{ request('search') }}">
+        <button type="submit">Search</button>
+    </form>
+    ```
+
+- **Controller Modification**: Updated the `index()` method in `OwnerController` to handle search queries and filter the displayed books.
+
+    ```php
+    public function index(Request $request)
+    {
+        // Fetch books based on search query
+    }
+    ```
+
+---
+
+#### **4. Admin Feature Implementation**
+- **Admin Role Setup**: 
+    - Created a `role` field in the `users` table to assign roles (e.g., `admin`, `owner`, `renter`).
+
+- **Middleware for Admin**: 
+    - Implemented an `AdminMiddleware` class to restrict access to admin routes.
+
+    ```php
+    public function handle($request, Closure $next)
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return $next($request);
+        }
+        return redirect('/')->withErrors('Access denied. Admins only.');
+    }
+    ```
+
+- **Admin Routes**: Defined routes for the admin dashboard and user management.
+
+    ```php
+    Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    });
+    ```
+
+- **Admin Dashboard**: Created the admin dashboard view to display the number of users and books.
+
+    ```html
+    <h2>Admin Dashboard</h2>
+    <p>Total Users: {{ $userCount }}</p>
+    <p>Total Books: {{ $bookCount }}</p>
+    ```
+
+- **Manage Users**: Implemented the `users()` method in `AdminController` to fetch and display all users.
+
+    ```php
+    public function users()
+    {
+        $users = User::all();
+        return view('admin.users', compact('users'));
+    }
+    ```
+
+- **Manage Books**: Created functionality to view and manage all books in the system.
+
+---
+
+### **Challenges Faced**:
+- Adjusting to the removal of `Kernel.php` in Laravel 11 required modifications in how middleware is defined and used.
+- Ensuring that all routes and functionalities were adequately protected by middleware to prevent unauthorized access.
+
+---
+
+### **Next Steps**:
+1. **Admin Functionality Enhancements**: 
+   - Add features for activating or deactivating users.
+   - Provide additional controls for managing books (e.g., adding or editing books).
+2. **Styling and UI Improvements**: 
+   - Enhance the user interface using CSS or a front-end framework for better usability and aesthetics.
+
+---
+
+### **Conclusion**:
+Day 3 has been successfully completed! You have implemented:
+- **Book management features** for owners (editing, deleting, searching).
+- **Admin features** including user management and an admin dashboard.
+
+

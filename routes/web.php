@@ -6,6 +6,15 @@ use App\Http\Controllers\RenterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AdminController;
+use App\Http\Middleware\AdminMiddleware;
+
+// Protect admin routes with the 'auth:sanctum' and 'admin' middleware
+Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+});
+
 
 Route::get('/', function () {
     return view('home');
@@ -28,7 +37,24 @@ Route::middleware('auth:sanctum')->group(function () {
     // Add this route for creating a new book
     Route::get('/owner/books/create', [OwnerController::class, 'create'])->name('owner.books.create');
     Route::post('/owner/books', [OwnerController::class, 'store'])->name('owner.books.store');
+    // Route to display the edit form
+    Route::get('/owner/books/{book}/edit', [OwnerController::class, 'edit'])->name('owner.books.edit');
+    
+    // Route to handle the submission of the edit form
+    Route::put('/owner/books/{book}', [OwnerController::class, 'update'])->name('owner.books.update');
+    // Route to delete a book
+    Route::delete('/owner/books/{book}', [OwnerController::class, 'destroy'])->name('owner.books.destroy');
+
 });
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/renter/dashboard', [RenterController::class, 'index'])->name('renter.dashboard');
+});
+Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+    
+    // Manage all books
+    Route::get('/admin/books', [AdminController::class, 'books'])->name('admin.books');
+    Route::delete('/admin/books/{book}', [AdminController::class, 'destroyBook'])->name('admin.books.destroy');
 });
