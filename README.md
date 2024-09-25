@@ -545,3 +545,100 @@ Day 3 has been successfully completed! You have implemented:
 - **Admin features** including user management and an admin dashboard.
 
 
+### **Day 4: Detailed Progress Report**
+
+---
+
+**Project Name**: Book Rental Application  
+**Frameworks/Tools**: Laravel 11, Blade, MySQL, Laravel Sanctum  
+**Date**: 25/09/2025 
+
+---
+
+### **Objectives for Day 4**:
+1. **Owner Dashboard Enhancement**:
+   - Display books uploaded by owners in their dashboard.
+2. **Renter Dashboard Enhancement**:
+   - Display books rented by renters in their dashboard.
+3. **Fix Format Error in Date Fields**:
+   - Resolve the issue of calling `format()` on a string instead of a `Carbon` date instance.
+4. **Sidebar Layout Fix**:
+   - Ensure that the content displays correctly beside the sidebar and not below it.
+
+---
+
+### **Tasks Completed**:
+
+#### **1. Owner Dashboard Enhancement**
+- **Objective**: Allow owners to view the books they have uploaded in the dashboard.
+  
+- **Steps Taken**:
+   - Added logic in `OwnerController` to retrieve books based on the logged-in owner’s ID.
+   - The `index()` method in `OwnerController` was updated to fetch the books using the `Book::where('owner_id', Auth::id())` query.
+   - In `resources/views/owner/dashboard.blade.php`, a table was created to display the owner’s uploaded books, including options to **edit** and **delete** each book.
+
+- **Outcome**: Owners can now see a list of all the books they have uploaded on their dashboard, complete with actions to edit or delete each book.
+
+---
+
+#### **2. Renter Dashboard Enhancement**
+- **Objective**: Allow renters to view the books they have rented.
+  
+- **Steps Taken**:
+   - Added logic in `RenterController` to retrieve books based on the logged-in renter’s rental records.
+   - The `index()` method in `RenterController` was updated to use the `Rental::with('book')->where('renter_id', Auth::id())` query to fetch rentals.
+   - The `Rental` model was updated with a relationship to the `Book` model to ensure proper data retrieval.
+   - In `resources/views/renter/dashboard.blade.php`, a table was created to display rented books, along with details like the **rented date** and **due date**.
+
+- **Outcome**: Renters can now see a list of books they have rented on their dashboard, with key information about the rental such as due date and rental price.
+
+---
+
+#### **3. Fix Format Error for Date Fields**
+- **Objective**: Fix the error `Call to a member function format() on string` when trying to format the `rented_on` and `due_date` fields.
+
+- **Steps Taken**:
+   - The `Rental` model was updated with the `protected $dates = ['rented_on', 'due_date'];` property, which automatically casts the `rented_on` and `due_date` fields as `Carbon` instances.
+   - The Blade views were updated to safely call `format()` on these fields to display them in the desired format (e.g., `Y-m-d`).
+
+- **Alternative Solution (Implemented for String Dates)**:
+   - For cases where dates are stored as strings, the `\Carbon\Carbon::parse()` method was used in the Blade views to manually parse the dates.
+
+- **Outcome**: The error has been resolved, and the date fields (e.g., `rented_on`, `due_date`) are now properly formatted using `format()`.
+
+---
+
+#### **4. Sidebar Layout Fix**
+- **Objective**: Ensure that the content displays correctly beside the sidebar, not below it.
+
+- **Steps Taken**:
+   - The layout in `resources/views/layouts/app.blade.php` was adjusted to ensure proper usage of Flexbox. The `#wrapper` div and `content-wrapper` were correctly structured to follow the SB Admin 2 layout guidelines.
+   - The CSS from SB Admin 2 was loaded properly using `{{ asset('css/sb-admin-2.min.css') }}` in the Blade layout to ensure that the Flexbox layout is respected.
+   - JavaScript and jQuery files were included to ensure responsive functionality of the sidebar.
+
+- **Outcome**: The sidebar now correctly displays beside the content instead of below it, ensuring proper use of space and layout.
+
+---
+
+### **Challenges Faced**:
+1. **Date Format Error**: Encountered an issue with calling `format()` on string fields in the database, which was fixed by casting the fields to `Carbon` instances in the model.
+2. **Sidebar Layout**: There was some misalignment in the layout, where the content was being pushed below the sidebar. This was resolved by properly structuring the Flexbox layout and ensuring the SB Admin 2 styles were applied.
+
+---
+
+### **Next Steps**:
+1. **Owner and Renter Features**:
+   - Expand functionality for owners to manage their books more effectively (e.g., adding categories or filtering options).
+   - Add functionality for renters to return books or extend rental periods.
+2. **Admin Dashboard Improvements**:
+   - Implement more detailed analytics for the admin, such as showing the total number of active rentals, overdue books, and active users.
+3. **Notifications**:
+   - Add a notification system for renters when a rental is due soon or overdue.
+
+---
+
+### **Conclusion**:
+Day 4 has been successfully completed with the following achievements:
+- Owners can view and manage their books on their dashboard.
+- Renters can see their rented books with relevant details.
+- Admins can view and manage books and user on their dashboard.

@@ -109,6 +109,10 @@ public function destroy(Book $book)
 
     return redirect()->route('owner.dashboard')->with('status', 'Book deleted successfully!');
 }
-
+public function books()
+{
+    $books = Book::where('owner_id', auth()->id())->get();
+    return view('owner.books.mybooks', compact('books'));
+}
 
 }

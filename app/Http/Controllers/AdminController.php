@@ -43,4 +43,20 @@ class AdminController extends Controller
         $book->delete();
         return redirect()->route('admin.books')->with('status', 'Book deleted successfully.');
     }
+    public function activateUser(User $user)
+{
+    $user->active = true;
+    $user->save();
+    
+    return redirect()->route('admin.users')->with('status', 'User activated successfully.');
+}
+
+public function deactivateUser(User $user)
+{
+    $user->active = false;
+    $user->save();
+    
+    return redirect()->route('admin.users')->with('status', 'User deactivated successfully.');
+}
+
 }

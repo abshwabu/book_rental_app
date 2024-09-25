@@ -16,6 +16,15 @@
                     Quantity: {{ $book->quantity }}<br>
                     Status: {{ ucfirst($book->status) }}<br>
                 </li>
+                @if($book->quantity > 0)
+                    <form action="{{ route('books.rent', $book->id) }}" method="POST">
+                        @csrf
+                        <button type="submit">Rent this book</button>
+                    </form>
+                @else
+                    <p>Currently unavailable</p>
+                @endif
+
                 <hr>
             @endforeach
         </ul>

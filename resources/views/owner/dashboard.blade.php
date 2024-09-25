@@ -6,7 +6,7 @@
         <a href="{{ route('owner.books.create') }}">Add New Book</a>
         <form action="{{ route('owner.dashboard') }}" method="GET">
             <input type="text" name="search" placeholder="Search by title or category" value="{{ request('search') }}">
-            <button type="submit">Search</button>
+            <button type="submit" class="btn btn-primary">Search</button>
         </form>        
         @if($books->isEmpty())
             <p>You haven't uploaded any books yet.</p>

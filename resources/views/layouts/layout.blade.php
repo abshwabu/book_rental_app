@@ -1,42 +1,74 @@
-<!-- resources/views/layouts/layout.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Book Rental App</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    @auth
+        <title>{{Auth::user()->role}} - page</title>
+    @endauth
+    
+
+    <!-- Custom fonts for this template-->
+    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <h1>Book Rental Application</h1>
-        <x-navbar />
-    </header>
-    @if (session('status'))
-    <div class="alert alert-success">
-        {{ session('status') }}
+
+<body id="page-top">
+
+    <!-- Wrapper -->
+    <div id="wrapper">
+        
+        <!-- Sidebar -->
+        <x-sidebar/>
+        
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            
+            <!-- Main Content -->
+            <div id="content">
+                
+                <!-- Topbar -->
+                <x-navbar />
+                
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page content goes here -->
+                    @yield('content')
+                </div>
+                <!-- /.container-fluid -->
+                
+            </div>
+            <!-- End of Main Content -->
+            
+            <!-- Footer -->
+            <x-footer/>
+        
+        </div>
+        <!-- End of Content Wrapper -->
+    
     </div>
-@endif
+    <!-- End of Wrapper -->
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    <!-- Scripts -->
+    <!-- jQuery, Bootstrap JS, and SB Admin JS -->
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
-    <main>
-        @yield('content')
-    </main>
+    <!-- Page level plugins -->
+    <script src="{{ asset('vendor/chart.js/Chart.min.js') }}"></script>
 
-    <footer>
-        <p>&copy; 2024 Book Rental App</p>
-    </footer>
+    <!-- Page level custom scripts -->
+    <script src="{{ asset('js/demo/chart-area-demo.js') }}"></script>
+    <script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script>
 
-    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>
