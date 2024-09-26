@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Book;
-
+use App\Models\Rental;
 class AdminController extends Controller
 {
     // Admin Dashboard
@@ -13,8 +13,16 @@ class AdminController extends Controller
     {
         $userCount = User::count();
         $bookCount = Book::count();
-        return view('admin.dashboard', compact('userCount', 'bookCount'));
+        $categoryNames = Book::join('categories', 'books.category_id', '=', 'categories.id')
+            ->groupBy('categories.id')
+            ->select('categories.name as category_name')
+            ->pluck('category_name');
+        $activeRentals = Rental::count();
+        $overdueRentals = Rental::where('due_date', '<', now())->count();
+        
+        return view('admin.dashboard', compact('userCount', 'bookCount', 'activeRentals', 'overdueRentals','categoryNames'));
     }
+
 
     // Manage Users
     public function users()

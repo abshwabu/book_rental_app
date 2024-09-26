@@ -9,24 +9,27 @@ class OwnerController extends Controller
 {
     public function index(Request $request)
 {
-    if (Auth::user()->role !== 'owner') {
-        return redirect()->route('home')->withErrors('Access denied.');
+    $query = Book::where('owner_id', Auth::id());
+
+    // Apply filtering
+    if ($request->has('category')) {
+        $query->where('category', $request->input('category'));
     }
 
-    // Fetch books uploaded by the owner
-    $query = Book::where('owner_id', auth()->id());
-
-    // If a search term is provided, filter the books
     if ($request->has('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('title', 'like', '%' . $request->search . '%')
-              ->orWhere('category', 'like', '%' . $request->search . '%');
-        });
+        $query->where('title', 'like', '%' . $request->input('search') . '%');
+    }
+
+    // Apply sorting
+    if ($request->has('sort_by')) {
+        $sortField = $request->input('sort_by');
+        $query->orderBy($sortField, 'asc');
     }
 
     $books = $query->get();
     return view('owner.dashboard', compact('books'));
 }
+
     public function create()
     {
         return view('owner.books.create'); // Ensure this view exists

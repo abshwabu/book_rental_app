@@ -49,4 +49,27 @@ public function index()
         
         return view('renter.books', compact('rentals'));
     }
+    public function returnBook(Rental $rental)
+    {
+        // Set the book status back to available and increase its quantity
+        $book = $rental->book;
+        $book->quantity += 1;
+        $book->status = 'available';
+        $book->save();
+
+        // Delete the rental record
+        $rental->delete();
+
+        return redirect()->route('renter.books')->with('status', 'Book returned successfully.');
+    }
+
+    public function extendRental(Rental $rental)
+    {
+        // Extend the rental due date by 7 days
+        $rental->due_date = $rental->due_date->addDays(7);
+        $rental->save();
+
+        return redirect()->route('renter.books')->with('status', 'Rental period extended.');
+    }
+
 }

@@ -58,6 +58,7 @@
     <!-- End of Wrapper -->
 
     <!-- Scripts -->
+    
     <!-- jQuery, Bootstrap JS, and SB Admin JS -->
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

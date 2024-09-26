@@ -57,7 +57,7 @@
     <hr class="sidebar-divider d-none d-md-block">
     @else
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('owner.dashboard') }}">
+        <a class="nav-link" href="{{ route('renter.dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>

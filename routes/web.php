@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Renter routes
-Route::middleware(['auth:sanctum', 'renter'])->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/renter/dashboard', [RenterController::class, 'index'])->name('renter.dashboard');
 });
 
@@ -65,3 +65,5 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
 // Book rental route
 Route::post('/books/{book}/rent', [RentalController::class, 'rent'])->name('books.rent')->middleware('auth:sanctum');
 Route::get('/renter/books', [RentalController::class, 'index'])->name('renter.books');
+Route::delete('/rentals/{rental}/return', [RentalController::class, 'returnBook'])->name('rentals.return');
+Route::post('/rentals/{rental}/extend', [RentalController::class, 'extendRental'])->name('rentals.extend');

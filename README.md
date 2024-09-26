@@ -642,3 +642,206 @@ Day 4 has been successfully completed with the following achievements:
 - Owners can view and manage their books on their dashboard.
 - Renters can see their rented books with relevant details.
 - Admins can view and manage books and user on their dashboard.
+
+### **Day 5: Detailed Progress Report**
+
+---
+
+**Project Name**: Book Rental Application  
+**Framework**: Laravel 11  
+**Date**: 26/09/2924  
+
+---
+
+### **Objectives for Day 5**:
+1. **Complete Owner and Renter Dashboards**:
+   - Allow owners to view and manage their uploaded books.
+   - Allow renters to view the books they have rented.
+2. **Admin Features**:
+   - Enable admins to manage users and books (view, activate/deactivate, and delete users and books).
+3. **Refinements**:
+   - Optimize routes and Blade views for owners and renters.
+   - Ensure correct middleware is applied to restrict access.
+
+---
+
+### **Tasks Completed**:
+
+#### **1. Owners Viewing Their Uploaded Books**
+- **Controller Logic**:
+    - In `OwnerController`, the `index()` method was enhanced to retrieve books uploaded by the authenticated owner using `Book::where('owner_id', Auth::id())->get()`.
+    - This allows the owner to see all books they’ve uploaded, including details such as title, author, category, quantity, rental price, and status.
+
+- **Owner Dashboard View**:
+    - The `resources/views/owner/dashboard.blade.php` view was created and updated to display the list of uploaded books in a table format.
+    - Each book has options to **edit** or **delete** with proper form submissions and CSRF protection.
+
+    **Example**:
+    ```blade
+    <h3>Your Uploaded Books</h3>
+
+    @if($books->isEmpty())
+        <p>You haven't uploaded any books yet.</p>
+    @else
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Rental Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($books as $book)
+                    <tr>
+                        <td>{{ $book->title }}</td>
+                        <td>{{ $book->author }}</td>
+                        <td>{{ $book->category }}</td>
+                        <td>{{ $book->quantity }}</td>
+                        <td>{{ $book->rental_price }}</td>
+                        <td>{{ ucfirst($book->status) }}</td>
+                        <td>
+                            <a href="{{ route('owner.books.edit', $book->id) }}" class="btn btn-primary">Edit</a>
+                            <form action="{{ route('owner.books.destroy', $book->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this book?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+    ```
+
+#### **2. Renters Viewing Their Rented Books**
+- **Controller Logic**:
+    - In `RenterController`, the `index()` method was updated to retrieve the books rented by the authenticated renter from the `rentals` table using `Rental::with('book')->where('renter_id', Auth::id())->get()`.
+    - This retrieves the books rented by the user, along with details such as rental date, due date, title, author, and price.
+
+- **Renter Dashboard View**:
+    - The `resources/views/renter/dashboard.blade.php` view was created and updated to display the list of rented books in a table format.
+    
+    **Example**:
+    ```blade
+    <h3>Books You've Rented</h3>
+
+    @if($rentals->isEmpty())
+        <p>You haven't rented any books yet.</p>
+    @else
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Rental Price</th>
+                    <th>Rented On</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($rentals as $rental)
+                    <tr>
+                        <td>{{ $rental->book->title }}</td>
+                        <td>{{ $rental->book->author }}</td>
+                        <td>{{ $rental->book->category }}</td>
+                        <td>{{ $rental->book->rental_price }}</td>
+                        <td>{{ $rental->rented_on->format('Y-m-d') }}</td>
+                        <td>{{ $rental->due_date->format('Y-m-d') }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+    ```
+
+#### **3. Admin Features**
+- **Manage Users**:
+    - In `AdminController`, admins can now view all users, activate or deactivate users, and delete users.
+    - The `users()` method retrieves all users, while `activateUser()` and `deactivateUser()` handle user status changes.
+
+    **Example**:
+    ```php
+    public function users()
+    {
+        $users = User::all();
+        return view('admin.users', compact('users'));
+    }
+
+    public function activateUser(User $user)
+    {
+        $user->active = true;
+        $user->save();
+        return redirect()->route('admin.users')->with('status', 'User activated successfully.');
+    }
+
+    public function deactivateUser(User $user)
+    {
+        $user->active = false;
+        $user->save();
+        return redirect()->route('admin.users')->with('status', 'User deactivated successfully.');
+    }
+    ```
+
+- **Manage Books**:
+    - Admins can view all books in the system and delete any book. The `books()` method retrieves all books, and the `destroyBook()` method deletes a book.
+
+#### **4. Routes Updated**
+- **Owner Routes**: 
+    - Owners can view their books, create, edit, and delete them through these routes:
+    ```php
+    Route::middleware(['auth:sanctum', 'owner'])->group(function () {
+        Route::get('/owner/dashboard', [OwnerController::class, 'index'])->name('owner.dashboard');
+        Route::get('/owner/books/create', [OwnerController::class, 'create'])->name('owner.books.create');
+        Route::post('/owner/books', [OwnerController::class, 'store'])->name('owner.books.store');
+        Route::get('/owner/books/{book}/edit', [OwnerController::class, 'edit'])->name('owner.books.edit');
+        Route::put('/owner/books/{book}', [OwnerController::class, 'update'])->name('owner.books.update');
+        Route::delete('/owner/books/{book}', [OwnerController::class, 'destroy'])->name('owner.books.destroy');
+    });
+    ```
+
+- **Renter Routes**:
+    - Renters can view the books they've rented through this route:
+    ```php
+    Route::middleware(['auth:sanctum', 'renter'])->group(function () {
+        Route::get('/renter/dashboard', [RenterController::class, 'index'])->name('renter.dashboard');
+    });
+    ```
+
+- **Admin Routes**: 
+    - Admins can manage users and books through these routes:
+    ```php
+    Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+        Route::put('/admin/users/{user}/activate', [AdminController::class, 'activateUser'])->name('admin.users.activate');
+        Route::put('/admin/users/{user}/deactivate', [AdminController::class, 'deactivateUser'])->name('admin.users.deactivate');
+        Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+        Route::get('/admin/books', [AdminController::class, 'books'])->name('admin.books');
+        Route::delete('/admin/books/{book}', [AdminController::class, 'destroyBook'])->name('admin.books.destroy');
+    });
+    ```
+
+---
+
+### **Next Steps for Day 6**:
+1. **Enhance the Admin Dashboard**:
+   - Display key statistics (e.g., total users, total books, total rentals).
+2. **Continue with Admin Features**:
+   - Implement bulk actions (e.g., activate/deactivate multiple users).
+3. **UI Refinements**:
+   - Improve the design of the owner and renter dashboards for better user experience.
+
+---
+
+### **Summary**:
+- **Owner and Renter Dashboards**: Completed, allowing owners to manage their books and renters to view their rented books.
+- **Admin Features**: Admins can now manage users and books (view, activate/deactivate, delete).
+- **Routes and Views**: Updated and optimized for better functionality.
+

@@ -9,19 +9,28 @@
     @else
         <ul>
             @foreach ($books as $book)
-                <li>
-                    <strong>{{ $book->title }}</strong> by {{ $book->author }}<br>
-                    Category: {{ $book->category }}<br>
-                    Price: {{ $book->rental_price }} Birr<br>
-                    Quantity: {{ $book->quantity }}<br>
-                    Status: {{ ucfirst($book->status) }}<br>
-                </li>
+                
                 @if($book->quantity > 0)
+                    <li>
+                        <strong>{{ $book->title }}</strong> by {{ $book->author }}<br>
+                        Category: {{ $book->category }}<br>
+                        Price: {{ $book->rental_price }} Birr<br>
+                        Quantity: {{ $book->quantity }}<br>
+                        Status: {{ $book->status }}<br>
+                    </li>
                     <form action="{{ route('books.rent', $book->id) }}" method="POST">
                         @csrf
                         <button type="submit">Rent this book</button>
                     </form>
                 @else
+                <li>
+                    <strong>{{ $book->title }}</strong> by {{ $book->author }}<br>
+                    Category: {{ $book->category }}<br>
+                    Price: {{ $book->rental_price }} Birr<br>
+                    Quantity: {{ $book->quantity }}<br>
+                    Status: {{$book->status = 'unavailable'}}<br>
+                </li>
+                    
                     <p>Currently unavailable</p>
                 @endif
 
