@@ -1,6 +1,6 @@
 ### **Day 6 Report**
 
-**Date:** [Insert Date]
+**Date:** 27/09/2024
 
 **Objective:**  
 Continue enhancing the admin and user experience by adding advanced features, such as integrating detailed statistics and improving the functionality of the book management system.
