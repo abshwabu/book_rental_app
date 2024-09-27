@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 class OwnerController extends Controller
 {
     public function index(Request $request)
@@ -35,71 +36,74 @@ class OwnerController extends Controller
         return view('owner.books.create'); // Ensure this view exists
     }
     public function store(Request $request)
-{
-    // Validate all inputs
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'author' => 'required|string|max:255',
-        'category' => 'required|string|max:255',  // Add validation for category
-        'quantity' => 'required|integer|min:1',  // Validate quantity as an integer greater than or equal to 1
-        'rental_price' => 'required|numeric',  // Ensure rental price is a number
-        'status' => 'required|in:available,unavailable',  // Validate the status as one of the enum values
-    ]);
+    {
+        $request->validate([
+            'title' => 'required',
+            'author' => 'required',
+            'cover_image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048', // Validate image
+        ]);
 
-    // Create a new book and associate it with the authenticated user
-    $book = new Book([
-        'title' => $request->title,
-        'author' => $request->author,
-        'category' => $request->category,
-        'quantity' => $request->quantity,  // Add the quantity field
-        'rental_price' => $request->rental_price,
-        'status' => $request->status,  // Add status from the select input
-    ]);
+        // Handle the file upload
+        $coverImagePath = null;
+        if ($request->hasFile('cover_image')) {
+            $coverImagePath = $request->file('cover_image')->store('cover_images', 'public');
+        }
 
-    auth()->user()->books()->save($book);
+        // Create the book
+        Book::create([
+            'title' => $request->title,
+            'author' => $request->author,
+            'category' => $request->category,
+            'quantity' => $request->quantity,
+            'rental_price' => $request->rental_price,
+            'status' => $request->status,
+            'owner_id' => auth()->id(),
+            'cover_image' => $coverImagePath, // Store the image path
+        ]);
 
-    // Redirect to the dashboard with a success message
-    return redirect()->route('owner.dashboard')->with('status', 'Book added successfully!');
-}
-public function edit(Book $book)
-{
-    // Ensure the user is the owner of the book
-    if ($book->owner_id !== auth()->id()) {
-        return redirect()->route('owner.dashboard')->withErrors('You are not authorized to edit this book.');
+        return redirect()->route('owner.dashboard')->with('status', 'Book added successfully.');
     }
 
-    return view('owner.books.edit', compact('book'));
-}
+    public function edit(Book $book)
+    {
+        // Ensure the user is the owner of the book
+        if ($book->owner_id !== auth()->id()) {
+            return redirect()->route('owner.dashboard')->withErrors('You are not authorized to edit this book.');
+        }
 
-public function update(Request $request, Book $book)
-{
-    // Ensure the user is the owner of the book
-    if ($book->owner_id !== auth()->id()) {
-        return redirect()->route('owner.dashboard')->withErrors('You are not authorized to update this book.');
+        return view('owner.books.edit', compact('book'));
     }
 
-    // Validate the request
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'author' => 'required|string|max:255',
-        'category' => 'required|string|max:255',
-        'quantity' => 'required|integer|min:1',
-        'rental_price' => 'required|numeric',
-        'status' => 'required|in:available,unavailable',
-    ]);
+    public function update(Request $request, Book $book)
+    {
+        $request->validate([
+            'title' => 'required',
+            'author' => 'required',
+            'cover_image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
+        ]);
 
-    // Update the book details
-    $book->update([
-        'title' => $request->title,
-        'author' => $request->author,
-        'category' => $request->category,
-        'quantity' => $request->quantity,
-        'rental_price' => $request->rental_price,
-        'status' => $request->status,
-    ]);
+        // Handle the file upload
+        if ($request->hasFile('cover_image')) {
+            // Delete old cover image if exists
+            if ($book->cover_image) {
+                Storage::disk('public')->delete($book->cover_image);
+            }
+            $book->cover_image = $request->file('cover_image')->store('cover_images', 'public');
+        }
 
-    return redirect()->route('owner.dashboard')->with('status', 'Book updated successfully!');
-}
+        // Update other fields
+        $book->update([
+            'title' => $request->title,
+            'author' => $request->author,
+            'category' => $request->category,
+            'quantity' => $request->quantity,
+            'rental_price' => $request->rental_price,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('owner.dashboard')->with('status', 'Book updated successfully.');
+    }
+
 public function destroy(Book $book)
 {
     // Ensure the user is the owner of the book
@@ -117,5 +121,12 @@ public function books()
     $books = Book::where('owner_id', auth()->id())->get();
     return view('owner.books.mybooks', compact('books'));
 }
+public function report()
+    {
+        // Fetch the rentals of the owner's books
+        $rentals = \App\Models\Rental::whereIn('book_id', auth()->user()->books->pluck('id'))->get();
+
+        return view('owner.report', compact('rentals'));
+    }
 
 }

@@ -25,9 +25,11 @@
 
     <!-- Wrapper -->
     <div id="wrapper">
-        
-        <!-- Sidebar -->
+        @auth
         <x-sidebar/>
+        @endauth
+        <!-- Sidebar -->
+        
         
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">

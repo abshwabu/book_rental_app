@@ -27,6 +27,8 @@ class LoginController extends Controller
             return redirect()->intended('owner/dashboard');
         } elseif (Auth::user()->role === 'renter') {
             return redirect()->intended('renter/dashboard');
+        } elseif (Auth::user()->role === 'admin') {
+            return redirect()->intended('admin/dashboard');
         }
     }
 

@@ -12,6 +12,11 @@
                 
                 @if($book->quantity > 0)
                     <li>
+                        @if ($book->cover_image)
+                            <img src="{{asset('storage/' . $book->cover_image)}}" alt="{{$book->title}}">
+                        @else
+                        No image 
+                        @endif <br>
                         <strong>{{ $book->title }}</strong> by {{ $book->author }}<br>
                         Category: {{ $book->category }}<br>
                         Price: {{ $book->rental_price }} Birr<br>

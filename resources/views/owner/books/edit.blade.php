@@ -4,48 +4,60 @@
 <div class="container">
     <h2>Edit Book</h2>
     
-    <form action="{{ route('owner.books.update', $book->id) }}" method="POST">
+    <form action="{{ route('owner.books.update', $book->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
-        @method('PUT') <!-- This is required for PUT requests -->
-
+        @method('PUT')
+    
+        <!-- Title input -->
         <div class="form-group">
-            <label for="title">Book Title:</label>
-            <input type="text" name="title" id="title" value="{{ old('title', $book->title) }}" required>
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ $book->title }}" required>
+        </div>
+    
+        <!-- Author input -->
+        <div class="form-group">
+            <label for="author">Author</label>
+            <input type="text" class="form-control" id="author" name="author" value="{{ $book->author }}" required>
+        </div>
+    
+        <!-- Category input -->
+        <div class="form-group">
+            <label for="category">Category</label>
+            <input type="text" class="form-control" id="category" name="category" value="{{ $book->category }}" required>
         </div>
 
+        <!-- Quantity input -->
         <div class="form-group">
-            <label for="author">Author:</label>
-            <input type="text" name="author" id="author" value="{{ old('author', $book->author) }}" required>
+            <label for="quantity">Quantity</label>
+            <input type="text" class="form-control" id="quantity" name="quantity" value="{{ $book->quantity }}" required>
         </div>
-
+    
+        <!-- Rental Price input -->
         <div class="form-group">
-            <label for="category">Category:</label>
-            <select name="category" id="category">
-                <option value="Fiction" {{ $book->category == 'Fiction' ? 'selected' : '' }}>Fiction</option>
-                <option value="Science" {{ $book->category == 'Science' ? 'selected' : '' }}>Science</option>
-                <option value="Biography" {{ $book->category == 'Biography' ? 'selected' : '' }}>Biography</option>
+            <label for="rental_price">Rental Price</label>
+            <input type="number" class="form-control" id="rental_price" name="rental_price" value="{{ $book->rental_price }}" required>
+        </div>
+    
+        <!-- Book Status input -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select name="status" id="status" class="form-control" required>
+                <option value="available" {{ $book->status === 'available' ? 'selected' : '' }}>Available</option>
+                <option value="unavailable" {{ $book->status === 'unavailable' ? 'selected' : '' }}>Unavailable</option>
             </select>
         </div>
-
+    
+        <!-- Cover Image input -->
         <div class="form-group">
-            <label for="quantity">Quantity:</label>
-            <input type="number" name="quantity" id="quantity" value="{{ old('quantity', $book->quantity) }}" required>
+            <label for="cover_image">Cover Image</label>
+            <input type="file" class="form-control" id="cover_image" name="cover_image">
+            @if($book->cover_image)
+                <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover Image" width="100">
+            @endif
         </div>
-
-        <div class="form-group">
-            <label for="rental_price">Rental Price:</label>
-            <input type="number" name="rental_price" id="rental_price" value="{{ old('rental_price', $book->rental_price) }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="status">Status:</label>
-            <select name="status" id="status">
-                <option value="available" {{ $book->status == 'available' ? 'selected' : '' }}>Available</option>
-                <option value="unavailable" {{ $book->status == 'unavailable' ? 'selected' : '' }}>Unavailable</option>
-            </select>
-        </div>
-
-        <button type="submit">Update Book</button>
+    
+        <button type="submit" class="btn btn-primary">Update Book</button>
     </form>
+    
 </div>
 @endsection

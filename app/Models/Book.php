@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
-    protected $fillable = ['owner_id', 'title', 'author', 'category', 'quantity', 'rental_price', 'status'];
+    protected $fillable = ['owner_id', 'title', 'author', 'category', 'quantity', 'rental_price', 'status','cover_image'];
 
     // A book belongs to a user (book owner)
     public function owner()

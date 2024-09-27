@@ -11,17 +11,26 @@ class AdminController extends Controller
     // Admin Dashboard
     public function index()
     {
-        $userCount = User::count();
-        $bookCount = Book::count();
-        $categoryNames = Book::join('categories', 'books.category_id', '=', 'categories.id')
-            ->groupBy('categories.id')
-            ->select('categories.name as category_name')
-            ->pluck('category_name');
-        $activeRentals = Rental::count();
-        $overdueRentals = Rental::where('due_date', '<', now())->count();
-        
-        return view('admin.dashboard', compact('userCount', 'bookCount', 'activeRentals', 'overdueRentals','categoryNames'));
+        // Total users and books
+        $totalUsers = User::count();
+        $totalBooks = Book::count();
+
+        // Top rented books
+        $topBooks = \App\Models\Book::withCount('rentals')
+                    ->orderBy('rentals_count', 'desc')
+                    ->take(5)
+                    ->get();
+
+        // Most active renters (rentals per renter)
+        $activeRenters = \App\Models\User::whereHas('rentals')
+                    ->withCount('rentals')
+                    ->orderBy('rentals_count', 'desc')
+                    ->take(5)
+                    ->get();
+
+        return view('admin.dashboard', compact('totalUsers', 'totalBooks', 'topBooks', 'activeRenters'));
     }
+
 
 
     // Manage Users
@@ -52,19 +61,19 @@ class AdminController extends Controller
         return redirect()->route('admin.books')->with('status', 'Book deleted successfully.');
     }
     public function activateUser(User $user)
-{
-    $user->active = true;
-    $user->save();
-    
-    return redirect()->route('admin.users')->with('status', 'User activated successfully.');
-}
+    {
+        $user->active = true;
+        $user->save();
+        
+        return redirect()->route('admin.users')->with('status', 'User activated successfully.');
+    }
 
-public function deactivateUser(User $user)
-{
-    $user->active = false;
-    $user->save();
-    
-    return redirect()->route('admin.users')->with('status', 'User deactivated successfully.');
-}
+    public function deactivateUser(User $user)
+    {
+        $user->active = false;
+        $user->save();
+        
+        return redirect()->route('admin.users')->with('status', 'User deactivated successfully.');
+    }
 
 }

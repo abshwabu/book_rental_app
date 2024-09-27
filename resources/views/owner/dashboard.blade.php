@@ -37,30 +37,30 @@
     <table class="table">
         <thead>
             <tr>
+                <th>Cover</th>
                 <th>Title</th>
                 <th>Author</th>
-                <th>Category</th>
-                <th>Rental Price</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach($books as $book)
                 <tr>
+                    <td>
+                        @if($book->cover_image)
+                            <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover Image" width="50">
+                        @else
+                            No image
+                        @endif
+                    </td>
                     <td>{{ $book->title }}</td>
                     <td>{{ $book->author }}</td>
-                    <td>{{ $book->category }}</td>
-                    <td>{{ $book->rental_price }}</td>
                     <td>
                         <a href="{{ route('owner.books.edit', $book->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                        <form action="{{ route('owner.books.destroy', $book->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+    
 @endsection

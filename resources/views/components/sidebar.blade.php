@@ -46,6 +46,18 @@
         </a>
     </li>
     <li class="nav-item">
+        <a class="nav-link" href="{{ route('owner.report') }}">
+            <i class="fas fa-fw fa-paper"></i>
+            <span>Report</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('owner.books.create') }}">
+            <i class="fas fa-fw fa-book"></i>
+            <span>Add book</span>
+        </a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link" href="{{ route('owner.books.mybooks') }}">
             <i class="fas fa-fw fa-book"></i>
             <span>Manage Books</span>

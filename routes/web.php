@@ -43,6 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/owner/books/{book}', [OwnerController::class, 'update'])->name('owner.books.update');
     // Route to delete a book
     Route::delete('/owner/books/{book}', [OwnerController::class, 'destroy'])->name('owner.books.destroy');
+    
+    Route::get('/owner/report', [OwnerController::class, 'report'])->name('owner.report');
 
 });
 
@@ -67,3 +69,5 @@ Route::post('/books/{book}/rent', [RentalController::class, 'rent'])->name('book
 Route::get('/renter/books', [RentalController::class, 'index'])->name('renter.books');
 Route::delete('/rentals/{rental}/return', [RentalController::class, 'returnBook'])->name('rentals.return');
 Route::post('/rentals/{rental}/extend', [RentalController::class, 'extendRental'])->name('rentals.extend');
+Route::post('/renter/books/{book}/review', [RentalController::class, 'review'])->name('renter.books.review');
+
