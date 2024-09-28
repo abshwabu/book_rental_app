@@ -33,13 +33,29 @@
         
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-            
+           
+
             <!-- Main Content -->
             <div id="content">
                 
                 <!-- Topbar -->
                 <x-navbar />
-                
+                @if (session('status'))
+                    <div id="status-message" class="alert alert-success">
+                        {{ session('status') }}
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div id="error-message" class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Page content goes here -->
@@ -72,6 +88,24 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('js/demo/chart-area-demo.js') }}"></script>
     <script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script>
+    <script>
+        // Function to hide status and error messages after 3 seconds
+        setTimeout(function() {
+            let statusMessage = document.getElementById('status-message');
+            let errorMessage = document.getElementById('error-message');
+    
+            // Hide the status message if it exists
+            if (statusMessage) {
+                statusMessage.style.display = 'none';
+            }
+    
+            // Hide the error message if it exists
+            if (errorMessage) {
+                errorMessage.style.display = 'none';
+            }
+        }, 3000); // 3000ms = 3 seconds
+    </script>
+    
 
 </body>
 </html>

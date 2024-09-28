@@ -55,3 +55,47 @@ Continue enhancing the admin and user experience by adding advanced features, su
 
 ---
 
+### **Daily Report - Day 7**
+
+**Date:** September 28, 2024
+
+---
+
+#### **1. JWT Integration with Sanctum**
+- **Issue:** User mentioned JWT was not working and that no token was being generated. After clarification, it was confirmed that the application is using Laravel Sanctum instead of traditional JWT.
+- **Resolution:** Reviewed and ensured that Sanctum configuration was correct for token authentication. Adjusted login handling and response to include proper token generation via Sanctum.
+
+#### **2. LoginController Update**
+- **Context:** The login system needed to handle different user roles (owner, renter, admin).
+- **Solution:**
+    - Implemented role-based redirection in the `LoginController`. Depending on the user's role, they are now redirected to the appropriate dashboard (`owner/dashboard`, `renter/dashboard`, or `admin/dashboard`).
+    - This was tested and verified to ensure that role-based authentication is functioning as intended.
+
+#### **3. Admin Dashboard User Interface**
+- **Objective:** Align the admin dashboard user interface (UI) with the provided design.
+- **Action:**
+    - The existing `manage users` interface was modified to visually resemble the reference image provided. A detailed table was created to display:
+        - User information (name, role, status).
+        - Control buttons for actions (view, delete, approve).
+    - Added dynamic elements like "Approve" and "Deactivate" buttons based on user status.
+    - Added visual elements to improve the aesthetic, such as color-coded statuses (e.g., "Active" shown in green).
+
+#### **4. Role-Based Book Uploads**
+- **Issue:** Only active users should be able to upload books.
+- **Resolution:**
+    - Added checks in the book upload logic to ensure only users with an `active` status can proceed with uploading books. Inactive users are restricted from performing this action.
+    - This was integrated into the backend to ensure that inactive users cannot bypass this check.
+
+#### **5. Alerts and Errors Auto Dismiss**
+- **Objective:** Automatically hide status and error messages after 3 seconds.
+- **Implementation:**
+    - Updated the blade templates where success and error messages are displayed.
+    - Added JavaScript to ensure the messages auto-hide after 3 seconds. Both status and error messages will now disappear, improving user experience.
+
+---
+
+**Next Steps for Day 8:**
+- Continue refining role-based functionalities.
+- Review any remaining tasks related to book cover uploads and admin management.
+- Enhance token-based authentication with Sanctum if needed.
+

@@ -33,7 +33,12 @@ class OwnerController extends Controller
 
     public function create()
     {
-        return view('owner.books.create'); // Ensure this view exists
+        if (Auth::user()->active) {
+            return view('owner.books.create'); // Ensure this view exists
+        } else {
+            return redirect()->back()->withErrors('You cannot upload a book. Your account is deactivated.');
+        }
+        
     }
     public function store(Request $request)
     {
