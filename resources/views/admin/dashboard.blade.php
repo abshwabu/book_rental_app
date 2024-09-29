@@ -7,6 +7,26 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
+                    <h2>Total Earnings </h2>
+                    <h1>${{ $totalEarnings }}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3>Earnings by Owners:</h3>
+            <ul>
+                @foreach($ownersEarnings as $owner)
+                    <li>{{ $owner->name }}: ${{ $owner->total_earnings }}</li>
+                @endforeach
+            </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
                     <h5>Total Users: {{ $totalUsers }}</h5>
                     <h5>Total Books: {{ $totalBooks }}</h5>
                 </div>

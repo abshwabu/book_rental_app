@@ -6,30 +6,28 @@ use Illuminate\Http\Request;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Rental;
 class OwnerController extends Controller
 {
     public function index(Request $request)
-{
-    $query = Book::where('owner_id', Auth::id());
+    {
+        $owner = Auth::user();
 
-    // Apply filtering
-    if ($request->has('category')) {
-        $query->where('category', $request->input('category'));
+        // Calculate total earnings
+        $totalEarnings = Rental::whereHas('book', function ($query) use ($owner) {
+            $query->where('owner_id', $owner->id);
+        })->sum('rental_price');
+
+        // Count total rentals of the owner's books
+        $totalRentals = Rental::whereHas('book', function ($query) use ($owner) {
+            $query->where('owner_id', $owner->id);
+        })->count();
+
+        // Get all books of the owner
+        $books = Book::where('owner_id', $owner->id)->get();
+
+        return view('owner.dashboard', compact('totalEarnings', 'totalRentals', 'books'));
     }
-
-    if ($request->has('search')) {
-        $query->where('title', 'like', '%' . $request->input('search') . '%');
-    }
-
-    // Apply sorting
-    if ($request->has('sort_by')) {
-        $sortField = $request->input('sort_by');
-        $query->orderBy($sortField, 'asc');
-    }
-
-    $books = $query->get();
-    return view('owner.dashboard', compact('books'));
-}
 
     public function create()
     {

@@ -10,13 +10,11 @@ class RenterController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->role !== 'renter') {
-            return redirect()->route('home')->withErrors('Access denied.');
-        }
-    
+        // Ensure only renters can access this page
+        
+
         // Fetch available books for rent
-        $books = Book::where('status', 'available')->get();
-        return view('renter.dashboard', compact('books'));
+        $books = Book::where('status', 'available')->get(); // Fetching books with 'available' status
+        return view('home', compact('books')); // Passing books to the view
     }
-    
 }

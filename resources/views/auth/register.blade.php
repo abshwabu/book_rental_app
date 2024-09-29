@@ -20,7 +20,6 @@
                 <span class="text-danger">{{ $message }}</span>
             @enderror
         </div>
-
         <div class="form-group">
             <label for="password">Password:</label>
             <input type="password" name="password" id="password" required>
@@ -32,6 +31,20 @@
         <div class="form-group">
             <label for="password_confirmation">Confirm Password:</label>
             <input type="password" name="password_confirmation" id="password_confirmation" required>
+        </div>
+        <div class="form-group">
+            <label for="location">Location:</label>
+            <input type="text" location="location" id="location" value="{{ old('location') }}" >
+            @error('location')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
+        <div class="form-group">
+            <label for="phone_number">Phone Number:</label>
+            <input type="text" phone_number="phone_number" id="phone_number" value="{{ old('phone_number') }}" >
+            @error('phone_number')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
         </div>
 
         <button type="submit">Register</button>

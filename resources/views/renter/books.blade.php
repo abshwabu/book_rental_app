@@ -16,6 +16,7 @@
                 <th>Author</th>
                 <th>Rented On</th>
                 <th>Due Date</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -23,7 +24,7 @@
                 <tr>
                     <td>
                         @if($rental->book->cover_image)
-                            <img src="{{ asset('storage/' . $rental->book->cover_image) }}" alt="Cover Image" width="50">
+                            {{$rental->book->cover_image}}
                         @else
                             No image
                         @endif
@@ -32,6 +33,13 @@
                     <td>{{ $rental->book->author }}</td>
                     <td>{{ $rental->rented_at }}</td>
                     <td>{{ $rental->due_date }}</td>
+                    <td>
+                        <form action="{{ route('rentals.return', $rental->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-success">Return</button>
+                        </form>
+                    </td>
                 </tr>
             @endforeach
         </tbody>

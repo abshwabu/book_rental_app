@@ -16,6 +16,7 @@
                     <th>Upload</th>
                     <th>Location</th>
                     <th>Status</th>
+                    <th>Total Earning</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -38,6 +39,18 @@
                                 {{ $user->active ? 'Active' : 'Deactivated' }}
                             </span>
                         </div>
+                    </td>
+                    <td>
+                        @foreach ($ownersEarnings as $owner )
+                            @if ($user->role == 'owner' && $user->id == $owner->id)
+
+                                <strong>${{ $owner->total_earnings }}</strong>
+                                
+                            @else
+                                
+                            @endif
+                        @endforeach
+                        
                     </td>
                     <td>
                         <div class="action-buttons">

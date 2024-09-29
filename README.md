@@ -99,3 +99,54 @@ Continue enhancing the admin and user experience by adding advanced features, su
 - Review any remaining tasks related to book cover uploads and admin management.
 - Enhance token-based authentication with Sanctum if needed.
 
+### Day 8 Report
+
+**Date**: September 29, 2024
+
+#### **Tasks Completed**
+
+1. **Owner Dashboard Implementation**:
+   - Created a new controller method `dashboard()` in the `OwnerController`.
+   - Implemented logic to calculate the total earnings of the owner based on rented books using the `Rental` model.
+   - Calculated the total number of books rented by the owner.
+   - Fetched a list of books belonging to the owner for display on the dashboard.
+
+2. **Owner Dashboard View**:
+   - Developed a Blade template (`owner/dashboard.blade.php`) to display the owner's total earnings, total rentals, and list of books.
+   - Structured the UI using Bootstrap, including tables and cards to display the data.
+
+3. **Routes Setup**:
+   - Defined a route for the owner's dashboard and assigned the `role:owner` middleware to ensure only owners can access the dashboard.
+   - Implemented the role-based middleware for authorization and configured it in the `Kernel.php` file.
+
+4. **Database Model Relationships**:
+   - Ensured that relationships in the `Book` and `Rental` models are properly set:
+     - `Book` model has a `hasMany` relationship with `Rental`.
+     - `Rental` model has a `belongsTo` relationship with both `Book` and `User`.
+   - Verified that the `owner_id` foreign key is properly used to fetch the owner's books and rentals.
+
+5. **Error Fix**:
+   - Addressed an error related to the undefined variable `$totalEarnings`. The controller was updated to ensure this variable is correctly passed to the view.
+
+---
+
+#### **Issues Encountered**
+
+- **Undefined Variable Error**: While fetching the total earnings, an error occurred due to an undefined variable `$totalEarnings`. This was resolved by ensuring the logic in the controller retrieved the correct data and passed it to the view.
+  
+---
+
+#### **Next Steps**
+1. **Wallet Functionalities**:
+   - Complete the implementation of wallet functionalities where:
+     - Admin can see the total amount earned by all owners and the amount earned by each owner.
+     - Owners can view their individual earnings in detail.
+
+2. **Additional Dashboard Enhancements**:
+   - Continue improving the owner's dashboard by integrating more advanced visualizations and charts.
+   - Add filters or sorting features for better management of book data.
+
+3. **Testing**:
+   - Test the current functionality to ensure all data is being fetched and displayed correctly on both the owner's and admin's dashboards.
+
+---

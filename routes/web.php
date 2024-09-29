@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\AdminMiddleware;
 
 // Home route
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [RenterController::class, 'index'])->name('home');
 
 // Login routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

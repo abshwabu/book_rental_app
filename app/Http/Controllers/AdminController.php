@@ -27,8 +27,15 @@ class AdminController extends Controller
                     ->orderBy('rentals_count', 'desc')
                     ->take(5)
                     ->get();
+        
+        $totalEarnings = Rental::sum('total_price');
 
-        return view('admin.dashboard', compact('totalUsers', 'totalBooks', 'topBooks', 'activeRenters'));
+        // Earnings by each owner
+        $ownersEarnings = User::where('role', 'owner')
+            ->withSum('books as total_earnings', 'total_price')
+            ->get();
+
+        return view('admin.dashboard', compact('totalUsers', 'totalBooks', 'topBooks', 'activeRenters','totalEarnings', 'ownersEarnings'));
     }
 
 
@@ -37,7 +44,11 @@ class AdminController extends Controller
     public function users()
     {
         $users = User::all();  // Fetch all users
-        return view('admin.users', compact('users'));
+        $ownersEarnings = User::where('role', 'owner')
+            ->withSum('books as total_earnings', 'rental_price')
+            ->get();
+
+        return view('admin.users', compact('users', 'ownersEarnings'));
     }
 
     // Delete a user
@@ -74,6 +85,18 @@ class AdminController extends Controller
         $user->save();
         
         return redirect()->route('admin.users')->with('status', 'User deactivated successfully.');
+    }
+    public function totalEarnings()
+    {
+        // Total earnings
+        $totalEarnings = Rental::sum('total_price');
+        
+        // Earnings by each owner
+        $ownersEarnings = User::where('role', 'owner')
+            ->withSum('books as total_earnings', 'rental_price')
+            ->get();
+        
+        return view('admin.dashboard', compact('totalEarnings', 'ownersEarnings'));
     }
 
 }
