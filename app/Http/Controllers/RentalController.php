@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Models\Rental;
 use Illuminate\Container\Attributes\Auth;
+use App\Models\User;
 
 
 
@@ -23,19 +24,20 @@ class RentalController extends Controller
         $totalPrice = $book->rental_price * $rentalDuration;
         
         // Create a new rental
-        $rental = new \App\Models\Rental();
-        $rental->book_id = $book->id;
-        $rental->renter_id = auth()->id();
-        $rental->rented_at = now();
-        $rental->due_date = $dueDate;
-        $rental->total_price = $totalPrice;  // Set the due date 2 weeks later
-        $rental->save();
+        Rental::create([
+            'book_id' => $book->id,
+            'renter_id' => auth()->id(),
+            'rented_at' => now(),
+            'due_date' => now()->addDays(14), // Example 2-week rental
+            'rental_price' => $book->rental_price,
+            'total_price' => $totalPrice,
+            'status' => 'Rented' // This is the default value
+        ]);
 
         // Decrease the quantity of the book
         $book->quantity -= 1;
         $book->save();
-        $admin = \App\Models\User::where('role', 'admin')->first();
-        $admin->notify(new \App\Notifications\NewRentalNotification($rental));
+        $admin = User::where('role', 'admin')->first();
 
 
         return redirect()->route('renter.dashboard')->with('status', 'Book rented successfully.');
@@ -57,8 +59,8 @@ class RentalController extends Controller
         $book->status = 'available';
         $book->save();
 
-        // Delete the rental record
-        $rental->delete();
+        $rental->status = 'Returned';
+        $rental->save();
 
         return redirect()->route('renter.books')->with('status', 'Book returned successfully.');
     }

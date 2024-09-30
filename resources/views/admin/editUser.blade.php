@@ -2,12 +2,13 @@
 
 @section('content')
 <div class="container">
-    <h2>Register</h2>
-    <form action="{{ route('register') }}" method="POST">
+    <h2>Edit User</h2>
+    <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
         @csrf
+        @method('PUT')
         <div class="form-group">
             <label for="name">Name:</label>
-            <input type="text" name="name" id="name" value="{{ old('name') }}" required>
+            <input type="text" name="name" id="name" value="{{ $user->name}}" required>
             @error('name')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
@@ -15,40 +16,34 @@
 
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" name="email" id="email" value="{{ old('email') }}" required>
+            <input type="email" name="email" id="email" value="{{ $user->email }}" required>
             @error('email')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
         </div>
         <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required>
-            @error('password')
-                <span class="text-danger">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="password_confirmation">Confirm Password:</label>
-            <input type="password" name="password_confirmation" id="password_confirmation" required>
+            <label for="role">Role</label>
+            <select name="role" id="role" class="form-control">
+                <option value="renter" {{$user->role === 'renter' ? 'selected': ''}} >Renter</option>
+                <option value="owner" {{$user->role === 'owner' ? 'selected' : ''}} >Owner</option>
+            </select>
         </div>
         <div class="form-group">
             <label for="location">Location:</label>
-            <input type="text" name="location" id="location" value="{{ old('location') }}" >
+            <input type="text" name="location" id="location" value="{{ $user->location}}" >
             @error('location')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
         </div>
         <div class="form-group">
             <label for="phone_number">Phone Number:</label>
-            <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number') }}" >
+            <input type="text" name="phone_number" id="phone_number" value="{{ $user->phone_number}}" >
             @error('phone_number')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
         </div>
 
         <button type="submit">Register</button>
-        <p>Already have an account? <a href="{{route('login')}}">Login</a></p>
     </form>
 </div>
 @endsection

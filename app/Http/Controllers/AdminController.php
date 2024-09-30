@@ -16,13 +16,13 @@ class AdminController extends Controller
         $totalBooks = Book::count();
 
         // Top rented books
-        $topBooks = \App\Models\Book::withCount('rentals')
+        $topBooks = Book::withCount('rentals')
                     ->orderBy('rentals_count', 'desc')
                     ->take(5)
                     ->get();
 
         // Most active renters (rentals per renter)
-        $activeRenters = \App\Models\User::whereHas('rentals')
+        $activeRenters = User::whereHas('rentals')
                     ->withCount('rentals')
                     ->orderBy('rentals_count', 'desc')
                     ->take(5)
@@ -31,9 +31,12 @@ class AdminController extends Controller
         $totalEarnings = Rental::sum('total_price');
 
         // Earnings by each owner
-        $ownersEarnings = User::where('role', 'owner')
-            ->withSum('books as total_earnings', 'total_price')
-            ->get();
+        $ownersEarnings = User::where('role', 'owner')->get()->map(function ($owner) {
+            $owner->total_earnings = Rental::whereHas('book', function ($query) use ($owner) {
+                $query->where('owner_id', $owner->id);
+            })->sum('total_price');
+            return $owner;
+        });
 
         return view('admin.dashboard', compact('totalUsers', 'totalBooks', 'topBooks', 'activeRenters','totalEarnings', 'ownersEarnings'));
     }
@@ -44,11 +47,34 @@ class AdminController extends Controller
     public function users()
     {
         $users = User::all();  // Fetch all users
-        $ownersEarnings = User::where('role', 'owner')
-            ->withSum('books as total_earnings', 'rental_price')
-            ->get();
+        foreach ($users as $user) {
+            if ($user->role === 'owner') {
+                $user->total_earnings = Rental::whereHas('book', function ($query) use ($user) {
+                    $query->where('owner_id', $user->id);
+                })->sum('total_price');
+            }
+        }
+        
 
-        return view('admin.users', compact('users', 'ownersEarnings'));
+        return view('admin.users', compact('users'));
+    }
+
+    // Edit Users
+    public function editUser(User $user)
+    {
+        return view('admin.editUser', compact('user'));
+    }
+    public function updateUser(User $user, Request $request)
+    {
+        $request->validate([
+            'name' => ['required','string','max:255'],
+            'email' => ['required','string','email','max:255', 'unique:users,email,'.$user->id],
+            'phone_number' => 'numeric|nullable',
+            'location' => 'nullable|string|max:255'
+        ]);
+
+        $user->update($request->all());
+        return redirect()->route('admin.users')->with('status', 'User updated successfully.');
     }
 
     // Delete a user
@@ -62,6 +88,13 @@ class AdminController extends Controller
     public function books()
     {
         $books = Book::all();  // Fetch all books
+        foreach ($books as $book) {
+            if ($book->quantity < 1) {
+                $book->status = 'unavailable';
+            } else {
+                $book->status = 'available';
+            }
+        }
         return view('admin.books', compact('books'));
     }
 
@@ -88,13 +121,12 @@ class AdminController extends Controller
     }
     public function totalEarnings()
     {
+        $user = User::where('role', 'owner');
         // Total earnings
         $totalEarnings = Rental::sum('total_price');
         
         // Earnings by each owner
-        $ownersEarnings = User::where('role', 'owner')
-            ->withSum('books as total_earnings', 'rental_price')
-            ->get();
+        $ownersEarnings = Rental::where('owner_id', '=', $user->id)->get();
         
         return view('admin.dashboard', compact('totalEarnings', 'ownersEarnings'));
     }

@@ -22,6 +22,8 @@
         </div>
 
         <button type="submit">Login</button>
+        <p>Do not have account? <a href="{{route('register')}}">Sign Up</a></p>
+        
     </form>
 </div>
 @endsection

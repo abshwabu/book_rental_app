@@ -15,6 +15,13 @@ class RenterController extends Controller
 
         // Fetch available books for rent
         $books = Book::where('status', 'available')->get(); // Fetching books with 'available' status
+        foreach ($books as $book) {
+            if ($book->quantity < 1) {
+                $book->status = 'unavailable';
+            } else {
+                $book->status = 'available';
+            }
+        }
         return view('home', compact('books')); // Passing books to the view
     }
 }

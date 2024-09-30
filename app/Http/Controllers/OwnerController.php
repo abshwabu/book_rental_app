@@ -16,7 +16,7 @@ class OwnerController extends Controller
         // Calculate total earnings
         $totalEarnings = Rental::whereHas('book', function ($query) use ($owner) {
             $query->where('owner_id', $owner->id);
-        })->sum('rental_price');
+        })->sum('total_price');
 
         // Count total rentals of the owner's books
         $totalRentals = Rental::whereHas('book', function ($query) use ($owner) {

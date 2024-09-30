@@ -25,4 +25,17 @@ class Book extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($book) {
+            // Automatically set the status based on quantity
+            if ($book->quantity < 1) {
+                $book->status = 'unavailable';
+            } else {
+                $book->status = 'available';
+            }
+        });
+    }
 }

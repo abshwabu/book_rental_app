@@ -41,20 +41,23 @@
                         </div>
                     </td>
                     <td>
-                        @foreach ($ownersEarnings as $owner )
-                            @if ($user->role == 'owner' && $user->id == $owner->id)
-
-                                <strong>${{ $owner->total_earnings }}</strong>
-                                
-                            @else
-                                
-                            @endif
-                        @endforeach
+                        @if($user->role === 'owner')
+                            ${{ number_format($user->total_earnings, 2) }}
+                        @else
+                            N/A
+                        @endif
                         
                     </td>
                     <td>
                         <div class="action-buttons">
 
+                            <!-- Delete Button -->
+                            <form action="{{ route('admin.users.edit', $user->id) }}" method="get" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="fa fa-pen"></i>
+                                </button>
+                            </form>
                             <!-- Delete Button -->
                             <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf

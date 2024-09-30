@@ -24,7 +24,7 @@
                 <tr>
                     <td>
                         @if($rental->book->cover_image)
-                            {{$rental->book->cover_image}}
+                            <img src="{{asset('storage/' . $rental->book->cover_image)}}" alt="" width="60px" height="90px">
                         @else
                             No image
                         @endif
@@ -34,12 +34,16 @@
                     <td>{{ $rental->rented_at }}</td>
                     <td>{{ $rental->due_date }}</td>
                     <td>
-                        <form action="{{ route('rentals.return', $rental->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-success">Return</button>
-                        </form>
-                    </td>
+                        @if($rental->status === 'rented')
+                            <form action="{{ route('rentals.return', $rental->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-success">Return</button>
+                            </form>
+                        @else
+                            <span class="badge bg-primary">Returned</span>
+                        @endif
+                    </td>                    
                 </tr>
             @endforeach
         </tbody>

@@ -59,13 +59,15 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
     Route::put('/admin/users/{user}/activate', [AdminController::class, 'activateUser'])->name('admin.users.activate');
     Route::put('/admin/users/{user}/deactivate', [AdminController::class, 'deactivateUser'])->name('admin.users.deactivate');
     Route::get('/admin/books', [AdminController::class, 'books'])->name('admin.books');
+    Route::get('/admin/users/{user}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::delete('/admin/books/{book}', [AdminController::class, 'destroyBook'])->name('admin.books.destroy');
 });
 
 // Book rental route
 Route::post('/books/{book}/rent', [RentalController::class, 'rent'])->name('books.rent')->middleware('auth:sanctum');
 Route::get('/renter/books', [RentalController::class, 'index'])->name('renter.books');
-Route::delete('/rentals/{rental}/return', [RentalController::class, 'returnBook'])->name('rentals.return');
+Route::put('/rentals/{rental}/return', [RentalController::class, 'returnBook'])->name('rentals.return');
 Route::post('/rentals/{rental}/extend', [RentalController::class, 'extendRental'])->name('rentals.extend');
 Route::post('/renter/books/{book}/review', [RentalController::class, 'review'])->name('renter.books.review');
 
