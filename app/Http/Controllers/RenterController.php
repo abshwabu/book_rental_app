@@ -32,6 +32,7 @@ class RenterController extends Controller
         if ($user->role === 'renter') {
             // Update user's role to indicate they have applied to become an owner
             $user->role = 'owner';  // Optional role to signify that the application is pending
+            $user->active = false;
             $user->save();
 
             // Optionally, notify the admin here (via email or a notification system)

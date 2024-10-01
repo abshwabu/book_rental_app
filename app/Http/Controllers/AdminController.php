@@ -70,7 +70,8 @@ class AdminController extends Controller
             'name' => ['required','string','max:255'],
             'email' => ['required','string','email','max:255', 'unique:users,email,'.$user->id],
             'phone_number' => 'numeric|nullable',
-            'location' => 'nullable|string|max:255'
+            'location' => 'nullable|string|max:255',
+            'role' => 'required|string|in:renter,owner',
         ]);
 
         $user->update([
