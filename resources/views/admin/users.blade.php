@@ -51,7 +51,7 @@
                     <td>
                         <div class="action-buttons">
 
-                            <!-- Delete Button -->
+                            <!-- Edit Button -->
                             <form action="{{ route('admin.users.edit', $user->id) }}" method="get" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-primary">

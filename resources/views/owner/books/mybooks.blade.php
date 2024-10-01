@@ -15,6 +15,7 @@
                     <th>Quantity</th>
                     <th>Rental Price</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,6 +27,24 @@
                         <td>{{ $book->quantity }}</td>
                         <td>{{ $book->rental_price }}</td>
                         <td>{{ ucfirst($book->status) }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <form action="{{ route('owner.books.edit', $book->id) }}" method="get" style="display:inline;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-primary">
+                                        <i class="fa fa-pen"></i>
+                                    </button>
+                                </form>
+                                <!-- Delete Button -->
+                                <form action="{{ route('owner.books.destroy', $book->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

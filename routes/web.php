@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Renter routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/renter/dashboard', [RenterController::class, 'index'])->name('renter.dashboard');
+    Route::post('/apply/become-owner', [RenterController::class, 'applyToBecomeOwner'])->name('apply.become.owner');
 });
 
 // Admin routes

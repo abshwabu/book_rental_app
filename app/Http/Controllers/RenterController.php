@@ -24,4 +24,21 @@ class RenterController extends Controller
         }
         return view('home', compact('books')); // Passing books to the view
     }
+    // Handle application to become an owner
+    public function applyToBecomeOwner(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->role === 'renter') {
+            // Update user's role to indicate they have applied to become an owner
+            $user->role = 'owner';  // Optional role to signify that the application is pending
+            $user->save();
+
+            // Optionally, notify the admin here (via email or a notification system)
+
+            return redirect()->back()->with('status', 'Your application to become an owner has been submitted.');
+        }
+
+        return redirect()->back()->withErrors('You are already an owner.');
+    }
 }

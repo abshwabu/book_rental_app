@@ -73,7 +73,13 @@ class AdminController extends Controller
             'location' => 'nullable|string|max:255'
         ]);
 
-        $user->update($request->all());
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'location' => $request->location,
+            'phone_number' => $request->phone_number,
+            'role' => $request->role
+            ]);
         return redirect()->route('admin.users')->with('status', 'User updated successfully.');
     }
 

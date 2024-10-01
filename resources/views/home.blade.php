@@ -52,5 +52,17 @@
         @endforeach
     </div>
     @endif
+    <!-- Button to apply to become an owner -->
+    @if(Auth::check() && Auth::user()->role === 'renter')
+        <div class="card mb-3">
+            <div class="card-body text-center">
+                <h4>Interested in Becoming an Owner?</h4>
+                <form action="{{ route('apply.become.owner') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">Apply to Become an Owner</button>
+                </form>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection
